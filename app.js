@@ -1,9 +1,23 @@
 console.log("start");
+const MORSE_MODE = 1;
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var ctx = new AudioContext();
 var dot = 1.2 / 15;
 
 const kevin = "-.- . ...- .. -.";
+const easyWords = [
+  "me",
+  "at",
+  "tie",
+  "tea",
+  "ten",
+  "tan",
+  "neat",
+  "meat",
+  "mate",
+  "team",
+  "time",
+];
 const morseTable = {
   a: ".-",
   b: "-...",
@@ -42,6 +56,14 @@ function textToMorse(str) {
   return morse;
 }
 
+function morse(msg) {
+  if (MORSE_MODE) {
+    vibrateMorse(msg);
+  } else {
+    soundMorse(msg);
+  }
+}
+
 function vibrateMorse(msg) {
   const DIT_LENGTH = 120;
   const DAH_LENGTH = DIT_LENGTH * 3;
@@ -72,7 +94,8 @@ function vibrateMorse(msg) {
   });
   navigator.vibrate(vibrationArray);
 }
-function morse(msg) {
+
+function soundMorse(msg) {
   var t = ctx.currentTime;
 
   var oscillator = ctx.createOscillator();
@@ -122,10 +145,30 @@ const app = document.getElementById("app");
 app.append(button("Start", "mainButton"));
 const mainButton = document.getElementById("mainButton");
 mainButton.addEventListener("click", () => {
-  morse(textToMorse("s"));
-  //vibrateMorse(textToMorse("sea"));
+  let word = getRandom(easyWords);
+  let suggestedWords = [];
+  suggestedWords.push(word);
+  addWords(suggestedWords);
+  console.log(suggestedWords);
+  morse(textToMorse(word));
   mainButton.innerText = "hello";
 });
+
+function addWords(suggestedWords) {
+  console.log(easyWords);
+  let maxCount = easyWords.length < 6 ? easyWords.length : 6;
+  while (suggestedWords.length < maxCount) {
+    let suggestWord = getRandom(easyWords);
+    if (!suggestedWords.includes(suggestWord)) {
+      suggestedWords.push(suggestWord);
+    }
+  }
+  console.log("exited loop");
+}
+
+function getRandom(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
 
 (function () {
   var src = "//cdn.jsdelivr.net/npm/eruda";
