@@ -31,7 +31,47 @@ const morseTable = {
   x: "-..-",
   y: "-.--",
   z: "--..",
+  " ": "/",
 };
+
+function textToMorse(str) {
+  let morse = "";
+  str.split("").forEach((e) => {
+    e !== " " ? (morse += morseTable[e] + " ") : (morse += morseTable[e]);
+  });
+  return morse;
+}
+
+function vibrateMorse(msg) {
+  const DIT_LENGTH = 120;
+  const DAH_LENGTH = DIT_LENGTH * 3;
+  const CHAR_PAUSE = DIT_LENGTH;
+  const WORD_PAUSE = DAH_LENGTH + DAH_LENGTH;
+  let vibrationArray = [];
+  msg.split("").forEach(function (letter) {
+    switch (letter) {
+      case ".":
+        // dit
+        vibrationArray.push(DIT_LENGTH);
+        // paus
+        vibrationArray.push(CHAR_PAUSE);
+        break;
+      case "-":
+        vibrationArray.push(DAH_LENGTH);
+        vibrationArray.push(CHAR_PAUSE);
+        break;
+      case "/":
+        vibrationArray.push(0);
+        vibrationArray.push(WORD_PAUSE);
+        break;
+      case " ":
+        vibrationArray.push(0);
+        vibrationArray.push(CHAR_PAUSE);
+        break;
+    }
+  });
+  navigator.vibrate(vibrationArray);
+}
 function morse(msg) {
   var t = ctx.currentTime;
 
@@ -57,6 +97,9 @@ function morse(msg) {
         t += dot;
         break;
       case " ":
+        t += 3 * dot;
+        break;
+      case "/":
         t += 7 * dot;
         break;
     }
@@ -79,5 +122,18 @@ const app = document.getElementById("app");
 app.append(button("Start", "mainButton"));
 const mainButton = document.getElementById("mainButton");
 mainButton.addEventListener("click", () => {
+  morse(textToMorse("s"));
+  //vibrateMorse(textToMorse("sea"));
   mainButton.innerText = "hello";
 });
+
+(function () {
+  var src = "//cdn.jsdelivr.net/npm/eruda";
+  if (
+    !/eruda=true/.test(window.location) &&
+    localStorage.getItem("active-eruda") != "true"
+  )
+    return;
+  document.write("<scr" + 'ipt src="' + src + '"></scr' + "ipt>");
+  document.write("<scr" + "ipt>eruda.init();</scr" + "ipt>");
+})();
