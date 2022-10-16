@@ -4,6 +4,7 @@ var AudioContext = window.AudioContext || window.webkitAudioContext;
 var ctx = new AudioContext();
 var dot = 1.2 / 15;
 
+let currentWord = "";
 const kevin = "-.- . ...- .. -.";
 const easyWords = [
   "me",
@@ -12,11 +13,11 @@ const easyWords = [
   "tea",
   "ten",
   "tan",
-  "neat",
-  "meat",
-  "mate",
-  "team",
-  "time",
+  // "neat",
+  // "meat",
+  // "mate",
+  // "team",
+  // "time",
 ];
 const morseTable = {
   a: ".-",
@@ -141,17 +142,79 @@ function button(str, id = null) {
   return buttonElement;
 }
 
+function div(str, id = null) {
+  const divElement = document.createElement("div");
+  divElement.innerText = str;
+  id ? divElement.setAttribute("id", id) : null;
+  return divElement;
+}
 const app = document.getElementById("app");
 app.append(button("Start", "mainButton"));
+
+const replayButton = button("Replay", "replay");
+replayButton.style.display = "none";
+replayButton.style.backgroundColor = "#00ccff";
+app.append(replayButton);
+
+let suggestButtons = [];
+for (i = 0; i < 6; i++) {
+  const buttonId = i.toString();
+  const suggestButton = button("", buttonId);
+  suggestButton.style.display = "none";
+  app.append(suggestButton);
+  suggestButtons.push(suggestButton);
+}
+
 const mainButton = document.getElementById("mainButton");
-mainButton.addEventListener("click", () => {
+const responseDiv = div("");
+responseDiv.style.display = "none";
+app.append(responseDiv);
+
+function play() {
+  replayButton.style.display = "inline";
+  responseDiv.style.display = "none";
   let word = getRandom(easyWords);
+  currentWord = word;
   let suggestedWords = [];
   suggestedWords.push(word);
   addWords(suggestedWords);
+  shuffleArray(suggestedWords);
+  let i = 0;
+  for (let suggestWord of suggestedWords) {
+    suggestButtons[i].innerText = suggestWord;
+    suggestButtons[i].style.display = "inline";
+    suggestButtons[i].addEventListener("click", () => {
+      let response;
+      if (suggestWord === word) {
+        response = "Correct";
+      } else {
+        response = "Incorrect";
+      }
+      responseDiv.innerText = response;
+      responseDiv.style.display = "inline";
+      reset();
+    });
+    i++;
+  }
   console.log(suggestedWords);
   morse(textToMorse(word));
-  mainButton.innerText = "hello";
+  mainButton.style.display = "none";
+}
+
+function reset() {
+  for (let suggestButton of suggestButtons) {
+    suggestButton.style.display = "none";
+  }
+  mainButton.style.display = "inline";
+  replayButton.style.display = "hidden";
+}
+
+mainButton.addEventListener("click", () => {
+  play();
+});
+
+replayButton.addEventListener("click", () => {
+  morse(textToMorse(currentWord));
 });
 
 function addWords(suggestedWords) {
@@ -168,6 +231,13 @@ function addWords(suggestedWords) {
 
 function getRandom(list) {
   return list[Math.floor(Math.random() * list.length)];
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }
 
 (function () {
