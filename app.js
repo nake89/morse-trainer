@@ -160,6 +160,13 @@ function checkbox(str, id) {
   return labelElement;
 }
 
+function img() {
+  const imgElement = document.createElement("img");
+  imgElement.setAttribute("src", "morse.jpg");
+  imgElement.setAttribute("height", "100%");
+  imgElement.setAttribute("width", "100%");
+  return imgElement;
+}
 const app = document.getElementById("app");
 app.append(button("Start", "mainButton"));
 
@@ -184,6 +191,8 @@ app.append(responseDiv);
 const br = document.createElement("br");
 app.append(br);
 app.append(checkbox("Sound?: ", "morseMode"));
+app.append(br);
+app.append(img());
 
 function play() {
   replayButton.style.display = "inline";
