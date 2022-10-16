@@ -1,5 +1,4 @@
 console.log("start");
-const MORSE_MODE = 1;
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var ctx = new AudioContext();
 var dot = 1.2 / 15;
@@ -58,7 +57,8 @@ function textToMorse(str) {
 }
 
 function morse(msg) {
-  if (MORSE_MODE) {
+  const morseMode = document.getElementById("morseMode");
+  if (!morseMode.checked) {
     vibrateMorse(msg);
   } else {
     soundMorse(msg);
@@ -148,6 +148,18 @@ function div(str, id = null) {
   id ? divElement.setAttribute("id", id) : null;
   return divElement;
 }
+
+function checkbox(str, id) {
+  const labelElement = document.createElement("label");
+  labelElement.setAttribute("for", id);
+  labelElement.innerText = str;
+  const checkboxElement = document.createElement("input");
+  id ? checkboxElement.setAttribute("id", id) : null;
+  checkboxElement.setAttribute("type", "checkbox");
+  labelElement.append(checkboxElement);
+  return labelElement;
+}
+
 const app = document.getElementById("app");
 app.append(button("Start", "mainButton"));
 
@@ -169,6 +181,9 @@ const mainButton = document.getElementById("mainButton");
 const responseDiv = div("");
 responseDiv.style.display = "none";
 app.append(responseDiv);
+const br = document.createElement("br");
+app.append(br);
+app.append(checkbox("Sound?: ", "morseMode"));
 
 function play() {
   replayButton.style.display = "inline";
@@ -188,7 +203,7 @@ function play() {
       if (suggestWord === word) {
         response = "Correct";
       } else {
-        response = "Incorrect";
+        response = "Incorrect. It was: " + currentWord;
       }
       responseDiv.innerText = response;
       responseDiv.style.display = "inline";
@@ -206,7 +221,7 @@ function reset() {
     suggestButton.style.display = "none";
   }
   mainButton.style.display = "inline";
-  replayButton.style.display = "hidden";
+  replayButton.style.display = "none";
 }
 
 mainButton.addEventListener("click", () => {
