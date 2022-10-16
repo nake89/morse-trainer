@@ -153,6 +153,7 @@ function checkbox(str, id) {
   const labelElement = document.createElement("label");
   labelElement.setAttribute("for", id);
   labelElement.innerText = str;
+  labelElement.style.display = "block";
   const checkboxElement = document.createElement("input");
   id ? checkboxElement.setAttribute("id", id) : null;
   checkboxElement.setAttribute("type", "checkbox");
@@ -210,12 +211,12 @@ function play() {
     suggestButtons[i].addEventListener("click", () => {
       let response;
       if (suggestWord === word) {
-        response = "Correct";
+        response = "Correct. The code was: " + textToMorse(currentWord);
       } else {
         response = "Incorrect. It was: " + currentWord;
       }
       responseDiv.innerText = response;
-      responseDiv.style.display = "inline";
+      responseDiv.style.display = "block";
       reset();
     });
     i++;
@@ -229,6 +230,7 @@ function reset() {
   for (let suggestButton of suggestButtons) {
     suggestButton.style.display = "none";
   }
+  mainButton.innerText = "Continue";
   mainButton.style.display = "inline";
   replayButton.style.display = "none";
 }
