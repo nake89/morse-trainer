@@ -4,7 +4,7 @@ var ctx = new AudioContext();
 var dot = 1.2 / 15;
 
 let currentWord = "";
-const levels = {
+let levels = {
   level1: ["me", "at", "tie", "tea", "ten", "tan"],
   level2: [
     "a",
@@ -4936,8 +4936,31 @@ const levels = {
     "neck",
   ],
 };
+const collator = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: "base",
+});
+const levelNames = Object.keys(levels).sort(collator.compare);
+levels = parseLevels(levels);
+function parseLevels(levelData) {
+  let parsedLevels = {};
+  let first = true;
+  let previousLevelName = "";
+  for (let levelName of levelNames) {
+    if (first) {
+      parsedLevels[levelName] = levelData[levelName];
+      previousLevelName = levelName;
+      first = false;
+      continue;
+    }
+    parsedLevels[levelName] = levelData[levelName].filter(
+      (el) => !levelData[previousLevelName].includes(el)
+    );
+    previousLevelName = levelName;
+  }
+  return parsedLevels;
+}
 
-const level1 = levels.level1;
 const morseTable = {
   a: ".-",
   b: "-...",
@@ -5092,12 +5115,7 @@ function img() {
 function dropdown() {
   const dropdownElement = document.createElement("select");
   dropdownElement.setAttribute("id", "dropdown");
-  const collator = new Intl.Collator(undefined, {
-    numeric: true,
-    sensitivity: "base",
-  });
-  const optionNames = Object.keys(levels).sort(collator.compare);
-  for (const optionName of optionNames) {
+  for (const optionName of levelNames) {
     const levelOption = document.createElement("option");
     levelOption.value = optionName;
     levelOption.innerText = optionName;
